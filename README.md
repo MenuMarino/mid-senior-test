@@ -235,14 +235,17 @@ Create a `.env` file in the project root with:
 
 ```
 # Database configuration
-DB_USER=user          # Database username (must match docker-compose.yml)
-DB_PASSWORD=password  # Database password (must match docker-compose.yml)
-DB_HOST=db            # Docker service name
-DB_PORT=5432          # Default PostgreSQL port
-DB_NAME=personal_loan # Database name
+DB_USER=user            # Database username (must match docker-compose.yml)
+DB_PASSWORD=password    # Database password (must match docker-compose.yml)
+DB_HOST=db              # Docker service name
+DB_PORT=5432            # Default PostgreSQL port
+DB_NAME=personal_loan   # Database name
 
 # Server configuration
-PORT=5000
+PORT=5000               # Optional. Default is 5000
+
+# JWT configuration
+JWT_SECRET=your-secret  # Secret to create the JWTs
 ```
 
 If port `5000` is already in use by another service on your machine, update docker-compose.yml to use a different local port. For example, change it to `5001`:
@@ -260,6 +263,14 @@ Run the following command to start the containers:
 
 ```bash
 docker compose up -d
+```
+
+### **Run Database Migrations**
+
+After starting the containers, run the following command to create the database tables:
+
+```bash
+docker exec -it personal_loan_app npx knex migrate:latest
 ```
 
 ---
@@ -286,4 +297,141 @@ curl http://localhost:5001
 { "message": "Personal Loan Application is running!" }
 ```
 
-## **API Endpoints (pending)**
+### **Logging**
+
+If you want to see the logs, you can execute the following command:
+
+```bash
+docker exec -it personal_loan_app cat logs/app.log
+```
+
+## **API Endpoints**
+
+### **User registration**
+
+**Endpoint:**
+
+```
+POST /api/users/register
+```
+
+#### **📌 Request body (JSON)**
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "secretpassword"
+}
+```
+
+#### **📌 Response (Success - 201)**
+
+```json
+{
+  "message": "User registered successfully!",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "created_at": "2025-02-26T12:00:00.000Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5..."
+}
+```
+
+- The token should be sent in the `Authorization` header for protected routes.
+
+#### **Response (Email already exists - 400)**
+
+```json
+{
+  "message": "Email is already registered."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Name is required.",
+      "path": "name",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Valid email is required.",
+      "path": "email",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Password must be at least 6 characters.",
+      "path": "password",
+      "location": "body"
+    }
+  ]
+}
+```
+
+---
+
+### **User login**
+
+**Endpoint:**
+
+```
+POST /api/users/login
+```
+
+#### **Request body (JSON)**
+
+```json
+{
+  "email": "john@example.com",
+  "password": "securepassword"
+}
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "message": "Login successful!",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5..."
+}
+```
+
+- The token should be sent in the `Authorization` header for protected routes.
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid email or password."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Valid email is required.",
+      "path": "email",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Password is required.",
+      "path": "password",
+      "location": "body"
+    }
+  ]
+}
+```
