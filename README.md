@@ -435,3 +435,199 @@ POST /api/users/login
   ]
 }
 ```
+
+### **Loan management (Protected routes)**
+
+**Endpoint:**
+
+```
+POST `/api/loans`
+```
+
+#### **Request body (JSON)**
+
+```json
+{
+  "amount": 1000,
+  "purpose": "string",
+  "duration": 12
+}
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "message": "Loan application submitted",
+  "loan": {
+    "id": 1,
+    "user_id": 1,
+    "amount": 1000,
+    "purpose": "string",
+    "duration": 12,
+    "status": "Pending",
+    "total_paid": 0,
+    "remaining_balance": 1000,
+    "created_at": "2025-02-27T13:26:43.136Z"
+  }
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Amount must be a positive number.",
+      "path": "amount",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Purpose is required.",
+      "path": "purpose",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Duration must be a positive integer.",
+      "path": "duration",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**Endpoint:**
+
+```
+GET `/api/loans`
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "loans": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "amount": 1000,
+      "purpose": "string",
+      "duration": 12,
+      "status": "Pending",
+      "total_paid": 0,
+      "remaining_balance": 1000,
+      "created_at": "2025-02-27T13:26:43.136Z"
+    }
+  ]
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+**Endpoint:**
+
+```
+GET `/api/loans/:id`
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "loan": {
+    "id": 1,
+    "user_id": 1,
+    "amount": 1000,
+    "purpose": "string",
+    "duration": 12,
+    "status": "Pending",
+    "total_paid": 0,
+    "remaining_balance": 1000,
+    "created_at": "2025-02-27T13:26:43.136Z"
+  }
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+**Endpoint:**
+
+```
+PATCH `/api/loans/:id/status`
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "message": "Loan status updated",
+  "loan": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "amount": 1000,
+      "purpose": "string",
+      "duration": 12,
+      "status": "Approved",
+      "total_paid": 0,
+      "remaining_balance": 1000,
+      "created_at": "2025-02-27T13:26:43.136Z"
+    }
+  ]
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+#### **Response (Non admin credentials - 400)**
+
+```json
+{
+  "message": "Access denied. Admins only."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Status must be either \"Approved\" or \"Rejected\".",
+      "path": "status",
+      "location": "body"
+    }
+  ]
+}
+```
