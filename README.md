@@ -518,6 +518,12 @@ POST `/api/loans`
 GET `/api/loans`
 ```
 
+**Query Parameters (Optional)**
+| Parameter | Type | Description |
+|------------|--------|-------------|
+| `cursor` | `string (ISO 8601 date)` | Used for cursor based pagination. Set this to the `nextCursor` value from the previous response to fetch the next page. |
+| `limit` | `integer` | Number of records per request (default: 10, max: 50). |
+
 #### **Response (Success - 200)**
 
 ```json
@@ -534,7 +540,8 @@ GET `/api/loans`
       "remaining_balance": 1000,
       "created_at": "2025-02-27T13:26:43.136Z"
     }
-  ]
+  ],
+  "nextCursor": "2025-02-27T13:26:43.136Z"
 }
 ```
 
@@ -589,19 +596,17 @@ PATCH `/api/loans/:id/status`
 ```json
 {
   "message": "Loan status updated",
-  "loan": [
-    {
-      "id": 1,
-      "user_id": 1,
-      "amount": 1000,
-      "purpose": "string",
-      "duration": 12,
-      "status": "Approved",
-      "total_paid": 0,
-      "remaining_balance": 1000,
-      "created_at": "2025-02-27T13:26:43.136Z"
-    }
-  ]
+  "loan": {
+    "id": 1,
+    "user_id": 1,
+    "amount": 1000,
+    "purpose": "lol",
+    "duration": 12,
+    "status": "Approved",
+    "total_paid": 90,
+    "remaining_balance": 910,
+    "created_at": "2025-02-27T13:26:43.136Z"
+  }
 }
 ```
 
@@ -702,6 +707,12 @@ POST `/api/payments/`
 ```
 POST `/api/loans/:id/payments`
 ```
+
+**Query Parameters (Optional)**
+| Parameter | Type | Description |
+|------------|--------|-------------|
+| `cursor` | `string (ISO 8601 date)` | Used for cursor based pagination. Set this to the `nextCursor` value from the previous response to fetch the next page. |
+| `limit` | `integer` | Number of records per request (default: 10, max: 50). |
 
 #### **Response (Success - 200)**
 

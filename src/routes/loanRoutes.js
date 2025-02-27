@@ -11,11 +11,26 @@ const {
   adminMiddleware,
   validationMiddleware,
 } = require('../middlewares');
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getUserLoans);
+router.get(
+  '/',
+  [
+    authMiddleware,
+    query('cursor')
+      .optional()
+      .isISO8601()
+      .withMessage('Cursor must be a valid date.'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 50 })
+      .withMessage('Limit must be between 1 and 50.'),
+    validationMiddleware,
+  ],
+  getUserLoans
+);
 
 router.post(
   '/',
@@ -62,6 +77,14 @@ router.get(
   [
     authMiddleware,
     param('id').isInt().withMessage('Loan ID must be an integer.'),
+    query('cursor')
+      .optional()
+      .isISO8601()
+      .withMessage('Cursor must be a valid date.'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 50 })
+      .withMessage('Limit must be between 1 and 50.'),
     validationMiddleware,
   ],
   getLoanPayments

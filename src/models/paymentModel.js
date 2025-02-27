@@ -25,17 +25,24 @@ const createPayment = async (loanId, amountPaid) => {
   });
 };
 
-const getPaymentsByLoanId = async (loanId) => {
-  return await db('payments')
-    .where({ loan_id: loanId })
-    .orderBy('payment_date', 'desc')
+const getPaymentsByLoanId = async (loanId, cursor, limit = 10) => {
+  let query = db('payments')
+    .where('loan_id', loanId)
+    .orderBy('created_at', 'desc')
     .select(
       'id',
       'loan_id',
       'amount_paid',
       db.raw("TO_CHAR(payment_date, 'YYYY-MM-DD') AS payment_date"),
       'created_at'
-    );
+    )
+    .limit(limit);
+
+  if (cursor) {
+    query = query.where('created_at', '<', cursor);
+  }
+
+  return await query;
 };
 
 module.exports = {

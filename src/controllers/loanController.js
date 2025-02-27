@@ -21,11 +21,12 @@ const applyForLoan = async (req, res) => {
 const getUserLoans = async (req, res) => {
   try {
     const userId = req.user.id;
-    const loans = await loanModel.getLoansByUser(userId);
+    const { cursor, limit } = req.query;
 
-    logger.info(`${loans.length} loans found for user ${userId}`);
+    const loans = await loanModel.getLoansByUser(userId, cursor, limit);
+    const nextCursor = loans.length ? loans[loans.length - 1].created_at : null;
 
-    res.status(200).json({ loans });
+    res.status(200).json({ loans, nextCursor });
   } catch (error) {
     logger.error(`Error fetching loans: ${error.message}`);
     res.status(500).json({ message: 'Internal server error' });
@@ -60,7 +61,9 @@ const updateLoanStatus = async (req, res) => {
     }
 
     logger.info(`Loan ${loanId} status updated to ${status}`);
-    res.status(200).json({ message: 'Loan status updated', loan: updatedLoan });
+    res
+      .status(200)
+      .json({ message: 'Loan status updated', loan: updatedLoan[0] });
   } catch (error) {
     logger.error(`Error updating loan status: ${error.message}`);
     res.status(500).json({ message: 'Internal server error' });

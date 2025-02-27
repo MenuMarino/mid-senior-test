@@ -16,8 +16,17 @@ const createLoan = async (userId, amount, purpose, duration) => {
   return newLoan[0];
 };
 
-const getLoansByUser = async (userId) => {
-  return await db('loans').where({ user_id: userId });
+const getLoansByUser = async (userId, cursor, limit = 10) => {
+  let query = db('loans')
+    .where('user_id', userId)
+    .orderBy('created_at', 'desc')
+    .limit(limit);
+
+  if (cursor) {
+    query = query.where('created_at', '<', cursor);
+  }
+
+  return await query;
 };
 
 const getLoanById = async (loanId, userId) => {

@@ -6,10 +6,7 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const loanRoutes = require('./routes/loanRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-const {
-  apiLimiter,
-  authLimiter,
-} = require('./middlewares/rateLimitMiddleware');
+const { apiLimiter, authLimiter } = require('./middlewares/');
 
 const app = express();
 
