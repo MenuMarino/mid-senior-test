@@ -2,7 +2,7 @@ const paymentModel = require('../models/paymentModel');
 const loanModel = require('../models/loanModel');
 const logger = require('../utils/logger');
 
-const makePayment = async (req, res) => {
+const makePayment = async (req, res, next) => {
   try {
     const { loanId, amountPaid } = req.body;
     const userId = req.user.id;
@@ -38,7 +38,7 @@ const makePayment = async (req, res) => {
   }
 };
 
-const getLoanPayments = async (req, res) => {
+const getLoanPayments = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const loanId = req.params.id;

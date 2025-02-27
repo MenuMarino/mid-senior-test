@@ -1,7 +1,7 @@
 const loanModel = require('../models/loanModel');
 const logger = require('../utils/logger');
 
-const applyForLoan = async (req, res) => {
+const applyForLoan = async (req, res, next) => {
   try {
     const { amount, purpose, duration } = req.body;
     const userId = req.user.id;
@@ -18,7 +18,7 @@ const applyForLoan = async (req, res) => {
   }
 };
 
-const getUserLoans = async (req, res) => {
+const getUserLoans = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { cursor, limit } = req.query;
@@ -33,7 +33,7 @@ const getUserLoans = async (req, res) => {
   }
 };
 
-const getLoanById = async (req, res) => {
+const getLoanById = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const loanId = req.params.id;
@@ -50,7 +50,7 @@ const getLoanById = async (req, res) => {
   }
 };
 
-const updateLoanStatus = async (req, res) => {
+const updateLoanStatus = async (req, res, next) => {
   try {
     const loanId = req.params.id;
     const { status } = req.body;

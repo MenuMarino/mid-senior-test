@@ -13,7 +13,7 @@ const register = async (req, res, next) => {
 
     if (existingUser) {
       logger.warn(`Failed register attempt for email: ${email}`);
-      return res.status(400).json({ message: 'Email is already registered.' });
+      return next({ status: 400, message: 'Email is already registered.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +30,7 @@ const register = async (req, res, next) => {
       .json({ message: 'User registered successfully!', user: newUser, token });
   } catch (error) {
     logger.error(`Register error: ${error.message}`);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    return next({ status: 500, message: error.message });
   }
 };
 
@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
     res.json({ message: 'Login successful!', token });
   } catch (error) {
     logger.error(`Login error: ${error.message}`);
-    next(new Error(error));
+    return next(new Error(error));
   }
 };
 
