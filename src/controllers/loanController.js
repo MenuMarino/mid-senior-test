@@ -6,16 +6,6 @@ const applyForLoan = async (req, res) => {
     const { amount, purpose, duration } = req.body;
     const userId = req.user.id;
 
-    if (!amount || !purpose || !duration) {
-      return res.status(400).json({ message: 'All fields are required.' });
-    }
-
-    if (amount <= 0 || duration <= 0) {
-      return res
-        .status(400)
-        .json({ message: 'Amount and duration must be positive numbers.' });
-    }
-
     const loan = await loanModel.createLoan(userId, amount, purpose, duration);
     logger.info(
       `Loan application submitted by user ${userId}. Duration: ${duration}`
@@ -63,10 +53,6 @@ const updateLoanStatus = async (req, res) => {
   try {
     const loanId = req.params.id;
     const { status } = req.body;
-
-    if (!['Approved', 'Rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
 
     const updatedLoan = await loanModel.updateLoanStatus(loanId, status);
     if (!updatedLoan) {

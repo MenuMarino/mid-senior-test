@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 const authRoutes = require('./routes/authRoutes');
 const loanRoutes = require('./routes/loanRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api/users', authRoutes);
 app.use('/api/loans', loanRoutes);
+app.use('/api/payments', paymentRoutes);
+
 app.get('/', (req, res) => {
   res.json({ message: 'Personal Loan Application is running!' });
 });

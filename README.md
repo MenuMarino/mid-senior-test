@@ -246,6 +246,10 @@ PORT=5000               # Optional. Default is 5000
 
 # JWT configuration
 JWT_SECRET=your-secret  # Secret to create the JWTs
+
+# Default admin
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin123
 ```
 
 If port `5000` is already in use by another service on your machine, update docker-compose.yml to use a different local port. For example, change it to `5001`:
@@ -629,5 +633,105 @@ PATCH `/api/loans/:id/status`
       "location": "body"
     }
   ]
+}
+```
+
+### **Loans payments (Protected routes)**
+
+**Endpoint:**
+
+```
+POST `/api/payments/`
+```
+
+#### **Request body (JSON)**
+
+```json
+{
+  "loanId": 1,
+  "amountPaid": 10
+}
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+  "message": "Payment successful",
+  "payment": {
+    "id": 1,
+    "loan_id": 1,
+    "amount_paid": 10,
+    "payment_date": "2025-02-27",
+    "created_at": "2025-02-27T14:20:31.777Z"
+  }
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "msg": "Loan ID must be an integer.",
+      "path": "loanId",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "msg": "Amount paid must be a positive number.",
+      "path": "amountPaid",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**Endpoint:**
+
+```
+POST `/api/loans/:id/payments`
+```
+
+#### **Response (Success - 200)**
+
+```json
+{
+    "payments": [
+        {
+            "id": 1,
+            "loan_id": 1,
+            "amount_paid": 10,
+            "payment_date": "2025-02-27",
+            "created_at": "2025-02-27T14:20:31.777Z"
+        },
+        ...
+    ]
+}
+```
+
+#### **Response (Invalid credentials - 400)**
+
+```json
+{
+  "message": "Invalid token."
+}
+```
+
+#### **Response (Validation error - 400)**
+
+```json
+{
+  "message": "Loan not found."
 }
 ```

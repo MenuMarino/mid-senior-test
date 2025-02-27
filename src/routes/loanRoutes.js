@@ -5,6 +5,7 @@ const {
   getLoanById,
   updateLoanStatus,
 } = require('../controllers/loanController');
+const { getLoanPayments } = require('../controllers/paymentController');
 const {
   authMiddleware,
   adminMiddleware,
@@ -54,6 +55,16 @@ router.patch(
     validationMiddleware,
   ],
   updateLoanStatus
+);
+
+router.get(
+  '/:id/payments',
+  [
+    authMiddleware,
+    param('id').isInt().withMessage('Loan ID must be an integer.'),
+    validationMiddleware,
+  ],
+  getLoanPayments
 );
 
 module.exports = router;
