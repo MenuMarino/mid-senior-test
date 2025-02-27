@@ -257,6 +257,9 @@ TEST_DB_HOST=db_test
 TEST_DB_PORT=5432
 ```
 
+> [!NOTE]  
+> In this project I'm using the port 5001 on my local machine, and the postman collecion is using that port aswell.
+
 If port `5000` is already in use by another service on your machine, update docker-compose.yml to use a different local port. For example, change it to `5001`:
 
 ```yaml
@@ -274,14 +277,6 @@ Run the following command to start the containers:
 docker compose --profile dev up --build -d
 ```
 
-### **Run Tests**
-
-Run the following command to start the containers:
-
-```bash
-docker compose --profile test up --build
-```
-
 ---
 
 ### **Verify the API is running**
@@ -291,14 +286,11 @@ Once the containers are up, test if the backend is working.
 #### **Test the API:**
 
 ```bash
-curl http://localhost:5000
-```
-
-If you changed the port (e.g., `5001`), run:
-
-```bash
 curl http://localhost:5001
 ```
+
+> [!NOTE]  
+> You can also access the URL in a browser and you will see the same response.
 
 #### **Expected message:**
 
@@ -313,6 +305,16 @@ If you want to see the logs, you can execute the following command:
 ```bash
 docker exec -it personal_loan_app cat logs/app.log
 ```
+
+### **Testing**
+
+Run the following command to run the tests:
+
+```bash
+docker compose --profile test up --build
+```
+
+To test the APIs, modify requests, or check endpoints, you can use this [Postman collection](./Loans%20management.postman_collection.json)
 
 ## **API Endpoints**
 
