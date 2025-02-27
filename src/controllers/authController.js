@@ -1,14 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
 const { createUser, getUserByEmail } = require('../models/userModel');
 const logger = require('../utils/logger');
 
-exports.register = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty())
-    return res.status(400).json({ errors: errors.array() });
-
+const register = async (req, res) => {
   const { name, email, password } = req.body;
   logger.info(`Registration attempt for ${name} with email ${email}`);
 
@@ -39,11 +34,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty())
-    return res.status(400).json({ errors: errors.array() });
-
+const login = async (req, res) => {
   const { email, password } = req.body;
   logger.info(`Login attempt for email ${email}`);
 
@@ -72,4 +63,9 @@ exports.login = async (req, res) => {
     logger.error(`Login error: ${error.message}`);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+};
+
+module.exports = {
+  register,
+  login,
 };
