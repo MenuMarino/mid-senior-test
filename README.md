@@ -250,6 +250,11 @@ JWT_SECRET=your-secret  # Secret to create the JWTs
 # Default admin
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=admin123
+
+# Test
+TEST_DB_NAME=personal_loan_testing
+TEST_DB_HOST=db_test
+TEST_DB_PORT=5432
 ```
 
 If port `5000` is already in use by another service on your machine, update docker-compose.yml to use a different local port. For example, change it to `5001`:
@@ -274,7 +279,7 @@ docker compose --profile dev up --build -d
 Run the following command to start the containers:
 
 ```bash
-docker compose --profile test up --build -d
+docker compose --profile test up --build
 ```
 
 ---
