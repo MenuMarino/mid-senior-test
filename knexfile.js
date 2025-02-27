@@ -23,4 +23,16 @@ module.exports = {
       directory: './seeds',
     },
   },
+  test: {
+    client: 'pg',
+    connection: {
+      host: process.env.TEST_DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.TEST_DB_NAME,
+      port: process.env.TEST_DB_PORT,
+    },
+    migrations: { directory: './migrations' },
+    seeds: { directory: './seeds' },
+  },
 };

@@ -266,15 +266,15 @@ ports:
 Run the following command to start the containers:
 
 ```bash
-docker compose up -d
+docker compose --profile dev up --build -d
 ```
 
-### **Run Database Migrations**
+### **Run Tests**
 
-After starting the containers, run the following command to create the database tables:
+Run the following command to start the containers:
 
 ```bash
-docker exec -it personal_loan_app npx knex migrate:latest
+docker compose --profile test up --build -d
 ```
 
 ---

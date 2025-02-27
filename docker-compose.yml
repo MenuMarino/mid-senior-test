@@ -1,36 +1,114 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:14
     container_name: personal_loan_db
     restart: always
+    profiles:
+      - dev
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: personal_loan
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db_test:
+    image: postgres:14
+    container_name: personal_loan_testing_db
+    restart: always
+    profiles:
+      - test
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${TEST_DB_NAME}
+    ports:
+      - '5433:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${TEST_DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrator:
+    build: .
+    container_name: personal_loan_migrator
+    profiles:
+      - dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+    command: ['sh', '-c', 'npx knex migrate:latest && npx knex seed:run']
+    restart: 'no'
+
+  test_migrator:
+    build: .
+    container_name: personal_loan_migrator_test
+    profiles:
+      - test
+    depends_on:
+      db_test:
+        condition: service_healthy
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${TEST_DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${TEST_DB_NAME}
+    command: ['sh', '-c', 'npx knex migrate:latest && npx knex seed:run']
+    restart: 'no'
 
   app:
     build: .
     container_name: personal_loan_app
     restart: always
+    profiles:
+      - dev
     depends_on:
-      - db
+      migrator:
+        condition: service_completed_successfully
     ports:
       - '5001:5000'
     environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: personal_loan
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
     volumes:
       - .:/app
     command: ['npm', 'run', 'dev']
+
+  test_runner:
+    build: .
+    container_name: personal_loan_test_runner
+    profiles:
+      - test
+    depends_on:
+      db_test:
+        condition: service_healthy
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${TEST_DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${TEST_DB_NAME}
+    command: ['npm', 'run', 'test']
 
 volumes:
   db_data:
