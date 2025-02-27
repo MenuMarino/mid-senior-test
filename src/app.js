@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const loanRoutes = require('./routes/loanRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-const { apiLimiter, authLimiter } = require('./middlewares/');
+const { apiLimiter, authLimiter, errorHandler } = require('./middlewares/');
 
 const app = express();
 
@@ -24,5 +24,7 @@ app.use('/api/payments', paymentRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'Personal Loan Application is running!' });
 });
+
+app.use(errorHandler);
 
 module.exports = app;

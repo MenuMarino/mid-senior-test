@@ -14,7 +14,7 @@ const applyForLoan = async (req, res) => {
     res.status(201).json({ message: 'Loan application submitted', loan });
   } catch (error) {
     logger.error(`Error applying for loan: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 
@@ -29,7 +29,7 @@ const getUserLoans = async (req, res) => {
     res.status(200).json({ loans, nextCursor });
   } catch (error) {
     logger.error(`Error fetching loans: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 
@@ -40,13 +40,13 @@ const getLoanById = async (req, res) => {
 
     const loan = await loanModel.getLoanById(loanId, userId);
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found' });
+      return next({ status: 404, message: 'Loan not found' });
     }
 
     res.status(200).json({ loan });
   } catch (error) {
     logger.error(`Error fetching loan: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 
@@ -57,7 +57,7 @@ const updateLoanStatus = async (req, res) => {
 
     const updatedLoan = await loanModel.updateLoanStatus(loanId, status);
     if (!updatedLoan) {
-      return res.status(404).json({ message: 'Loan not found' });
+      return next({ status: 404, message: 'Loan not found' });
     }
 
     logger.info(`Loan ${loanId} status updated to ${status}`);
@@ -66,7 +66,7 @@ const updateLoanStatus = async (req, res) => {
       .json({ message: 'Loan status updated', loan: updatedLoan[0] });
   } catch (error) {
     logger.error(`Error updating loan status: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 

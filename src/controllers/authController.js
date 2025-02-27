@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { createUser, getUserByEmail } = require('../models/userModel');
 const logger = require('../utils/logger');
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   const { name, email, password } = req.body;
   logger.info(`Registration attempt for ${name} with email ${email}`);
 
@@ -34,7 +34,7 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   logger.info(`Login attempt for email ${email}`);
 
@@ -42,13 +42,13 @@ const login = async (req, res) => {
     const user = await getUserByEmail(email);
     if (!user) {
       logger.warn(`Failed login attempt for email: ${email}`);
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      return next({ status: 400, message: 'Invalid email or password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       logger.warn(`Incorrect password for email: ${email}`);
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      return next({ status: 400, message: 'Invalid email or password.' });
     }
 
     const token = jwt.sign(
@@ -61,7 +61,7 @@ const login = async (req, res) => {
     res.json({ message: 'Login successful!', token });
   } catch (error) {
     logger.error(`Login error: ${error.message}`);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    next(new Error(error));
   }
 };
 

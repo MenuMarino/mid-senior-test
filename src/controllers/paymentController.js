@@ -9,19 +9,21 @@ const makePayment = async (req, res) => {
 
     const loan = await loanModel.getLoanById(loanId, userId);
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found.' });
+      return next({ status: 404, message: 'Loan not found' });
     }
 
     if (loan.status !== 'Approved') {
-      return res
-        .status(400)
-        .json({ message: 'Only approved loans can receive payments.' });
+      return next({
+        status: 404,
+        message: 'Only approved loans can receive payments.',
+      });
     }
 
     if (loan.remaining_balance < amountPaid) {
-      return res
-        .status(400)
-        .json({ message: 'Payment exceeds remaining balance.' });
+      return next({
+        status: 404,
+        message: 'Payment exceeds remaining balance.',
+      });
     }
 
     const payment = await paymentModel.createPayment(loanId, amountPaid);
@@ -32,7 +34,7 @@ const makePayment = async (req, res) => {
     res.status(201).json({ message: 'Payment successful', payment });
   } catch (error) {
     logger.error(`Payment error: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 
@@ -44,7 +46,7 @@ const getLoanPayments = async (req, res) => {
 
     const loan = await loanModel.getLoanById(loanId, userId);
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found.' });
+      return next({ status: 404, message: 'Loan not found' });
     }
 
     const payments = await paymentModel.getPaymentsByLoanId(
@@ -62,7 +64,7 @@ const getLoanPayments = async (req, res) => {
     res.status(200).json({ payments, nextCursor });
   } catch (error) {
     logger.error(`Error retrieving payments: ${error.message}`);
-    res.status(500).json({ message: 'Internal server error' });
+    return next({ status: 500, message: error.message });
   }
 };
 
