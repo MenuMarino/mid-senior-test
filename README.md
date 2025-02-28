@@ -753,3 +753,11 @@ POST `/api/loans/:id/payments`
   "message": "Loan not found."
 }
 ```
+
+## Future work
+
+- The correlation ID in the logger allows for filtering logs efficiently, making it especially useful in a microservices architecture. We can send the correlation ID in the X-Correlation-ID header and track an entire request flow across multiple services, making debugging and monitoring much easier.
+
+- Instead of using JWT, we can leverage Redis sessions for authentication. This approach enables rate limiting across multiple servers rather than being restricted to a single instance. Additionally, redis sessions allow for instant user blocking, preventing malicious users from continuing their activity without waiting for token expiration. Considering that this is a loan management application, this can be really useful.
+
+- The logs should be stored in AWS CloudWatch for easier filtering, right now the logs are stored in a text file.
