@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const correlationId = require('express-correlation-id');
 
 const authRoutes = require('./routes/authRoutes');
 const loanRoutes = require('./routes/loanRoutes');
@@ -11,6 +12,7 @@ const { apiLimiter, authLimiter, errorHandler } = require('./middlewares/');
 const app = express();
 
 app.use(apiLimiter);
+app.use(correlationId());
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
