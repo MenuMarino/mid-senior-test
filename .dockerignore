@@ -1,0 +1,6 @@
+node_modules
+logs
+.dockerignore
+Dockerfile
+loans_management.postman_collection.json
+README.md 
